@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import type { Cache } from 'cache-manager';
 import { randomUUID } from 'crypto';
-import { IExchangeRateProvider } from '../../domain/interfaces/exchange-rate-provider.interface';
+import { IExchangeRateProvider } from '../../../../shared-kernel/domain/interfaces/exchange-rate-provider.interface';
 import { ExchangeRate } from '../../domain/entities/exchange-rate.entity';
 import type { DolarApiResponse } from '../../domain/types/dolar-api-response.type';
 import { ExternalServiceException } from '../../../../shared-kernel/domain/exceptions/external-service.exception';

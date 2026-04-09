@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Post,
   Put,
@@ -22,7 +23,10 @@ import {
 import { CurrentUser } from '../../../../shared-kernel/infrastructure/decorators/current-user.decorator';
 import { ParseUUIDPipe } from '../../../../shared-kernel/infrastructure/pipes/parse-uuid.pipe';
 import type { FirebaseUser } from '../../../../shared-kernel/infrastructure/guards/firebase-auth.guard';
-import { SyncFirebaseUserUseCase } from '../../../users/application/use-cases/sync-firebase-user.use-case';
+import {
+  FIREBASE_USER_SYNC_PORT,
+  type IFirebaseUserSyncPort,
+} from '../../../../shared-kernel/domain/interfaces/firebase-user-sync.port';
 import { CreateShoppingListUseCase } from '../../application/use-cases/create-shopping-list.use-case';
 import { GetShoppingListsUseCase } from '../../application/use-cases/get-shopping-lists.use-case';
 import { GetShoppingListByIdUseCase } from '../../application/use-cases/get-shopping-list-by-id.use-case';
@@ -67,7 +71,8 @@ export class ShoppingListsController {
     private readonly duplicateShoppingList: DuplicateShoppingListUseCase,
     private readonly compareShoppingLists: CompareShoppingListsUseCase,
     private readonly getSpendingStats: GetSpendingStatsUseCase,
-    private readonly syncFirebaseUser: SyncFirebaseUserUseCase,
+    @Inject(FIREBASE_USER_SYNC_PORT)
+    private readonly syncFirebaseUser: IFirebaseUserSyncPort,
   ) {}
 
   // ──────────────────────────────────────────────

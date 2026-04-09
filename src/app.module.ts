@@ -17,6 +17,7 @@ import { getDatabaseConfig } from './shared-kernel/infrastructure/config/databas
 import { UsersModule } from './modules/users/users.module';
 import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
 import { ExchangeRatesModule } from './modules/exchange-rates/exchange-rates.module';
+import { DebtsModule } from './modules/debts/debts.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ExchangeRatesModule } from './modules/exchange-rates/exchange-rates.mod
     UsersModule,
     ShoppingListsModule,
     ExchangeRatesModule,
+    DebtsModule,
 
     // Rate limiting
     ThrottlerModule.forRoot([

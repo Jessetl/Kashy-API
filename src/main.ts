@@ -56,6 +56,10 @@ async function bootstrap() {
       'Exchange Rates',
       'Tasa de cambio VES/USD oficial desde DolarAPI (endpoint publico)',
     )
+    .addTag(
+      'Debts',
+      'CRUD de deudas y cobros personales en USD con prioridad, interes y vencimiento',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

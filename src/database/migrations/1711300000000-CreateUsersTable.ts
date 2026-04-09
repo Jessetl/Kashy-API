@@ -42,6 +42,12 @@ export class CreateUsersTable1711300000000 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'country',
+            type: 'enum',
+            enum: ['VE', 'AR', 'CH', 'CO', 'PE', 'BR'],
+            default: 'VE',
+          },
+          {
             name: 'location_label',
             type: 'varchar',
             isNullable: true,

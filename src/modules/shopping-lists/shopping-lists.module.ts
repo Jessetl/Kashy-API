@@ -19,14 +19,10 @@ import { DuplicateShoppingListUseCase } from './application/use-cases/duplicate-
 import { CompareShoppingListsUseCase } from './application/use-cases/compare-shopping-lists.use-case';
 import { GetSpendingStatsUseCase } from './application/use-cases/get-spending-stats.use-case';
 import { ShoppingListsController } from './infrastructure/controllers/shopping-lists.controller';
-import { UsersModule } from '../users/users.module';
-import { ExchangeRatesModule } from '../exchange-rates/exchange-rates.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ShoppingListOrmEntity, ShoppingItemOrmEntity]),
-    UsersModule,
-    ExchangeRatesModule,
   ],
   controllers: [ShoppingListsController],
   providers: [

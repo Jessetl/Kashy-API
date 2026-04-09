@@ -9,43 +9,51 @@ import {
 @Entity('users')
 export class UserOrmEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'firebase_uid', type: 'varchar', unique: true })
-  firebaseUid: string;
+  firebaseUid!: string;
 
   @Column({ type: 'varchar' })
-  email: string;
+  email!: string;
 
   @Column({ name: 'first_name', type: 'varchar', nullable: true })
-  firstName: string | null;
+  firstName!: string | null;
 
   @Column({ name: 'last_name', type: 'varchar', nullable: true })
-  lastName: string | null;
+  lastName!: string | null;
 
   @Column({ name: 'avatar_url', type: 'varchar', nullable: true })
-  avatarUrl: string | null;
+  avatarUrl!: string | null;
+
+  @Column({
+    name: 'country',
+    type: 'enum',
+    enum: ['VE', 'AR', 'CH', 'CO', 'PE', 'BR'],
+    default: 'VE',
+  })
+  country!: 'VE' | 'AR' | 'CH' | 'CO' | 'PE' | 'BR';
 
   @Column({ name: 'location_label', type: 'varchar', nullable: true })
-  locationLabel: string | null;
+  locationLabel!: string | null;
 
   @Column({
     name: 'location_latitude',
     type: 'double precision',
     nullable: true,
   })
-  locationLatitude: number | null;
+  locationLatitude!: number | null;
 
   @Column({
     name: 'location_longitude',
     type: 'double precision',
     nullable: true,
   })
-  locationLongitude: number | null;
+  locationLongitude!: number | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

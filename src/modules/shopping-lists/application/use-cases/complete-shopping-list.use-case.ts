@@ -2,8 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UseCase } from '../../../../shared-kernel/application/use-case';
 import type { IShoppingListRepository } from '../../domain/interfaces/repositories/shopping-list.repository.interface';
 import { SHOPPING_LIST_REPOSITORY } from '../../domain/interfaces/repositories/shopping-list.repository.interface';
-import type { IExchangeRateProvider } from '../../../exchange-rates/domain/interfaces/exchange-rate-provider.interface';
-import { EXCHANGE_RATE_PROVIDER } from '../../../exchange-rates/domain/interfaces/exchange-rate-provider.interface';
+import {
+  EXCHANGE_RATE_PROVIDER,
+  type IExchangeRateProvider,
+} from '../../../../shared-kernel/domain/interfaces/exchange-rate-provider.interface';
 import { ShoppingListNotFoundException } from '../../domain/exceptions/shopping-list-not-found.exception';
 import { ShoppingListResponseDto } from '../dtos/shopping-list-response.dto';
 import { ShoppingListMapper } from '../mappers/shopping-list.mapper';
