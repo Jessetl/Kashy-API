@@ -8,6 +8,15 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
+  const port = Number(process.env.PORT ?? 3000);
+  const host = process.env.HOST ?? '0.0.0.0';
+
+  const allowedOrigins = (
+    process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000'
+  )
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
   // Seguridad HTTP headers
   app.use(helmet());
@@ -17,9 +26,7 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-      'http://localhost:3000',
-    ],
+    origin: allowedOrigins.includes('*') ? true : allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
@@ -60,14 +67,17 @@ async function bootstrap() {
       'Debts',
       'CRUD de deudas y cobros personales en USD con prioridad, interes y vencimiento',
     )
+    .addTag(
+      'Notifications',
+      'Notificaciones push de recordatorio de vencimiento de deudas via FCM + RabbitMQ',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
-  const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-  logger.log(`Application running on port ${port}`);
+  await app.listen(port, host);
+  logger.log(`Application running on ${host}:${port}`);
   logger.log(`Swagger available at http://localhost:${port}/docs`);
 }
 

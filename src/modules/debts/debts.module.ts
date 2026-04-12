@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DebtOrmEntity } from './infrastructure/persistence/orm-entities/debt.orm-entity';
 import { TypeOrmDebtRepository } from './infrastructure/persistence/repositories/typeorm-debt.repository';
@@ -11,11 +11,13 @@ import { DeleteDebtUseCase } from './application/use-cases/delete-debt.use-case'
 import { PayDebtUseCase } from './application/use-cases/pay-debt.use-case';
 import { DebtsController } from './infrastructure/controllers/debts.controller';
 import { UsersModule } from '../users/users.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([DebtOrmEntity]),
     UsersModule,
+    forwardRef(() => NotificationsModule),
   ],
   controllers: [DebtsController],
   providers: [

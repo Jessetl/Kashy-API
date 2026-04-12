@@ -31,6 +31,66 @@
 $ npm install
 ```
 
+## Levantar en local y permitir conexiones externas
+
+### 1. Variables de entorno
+
+```bash
+cp .env.example .env
+```
+
+Configura al menos estos valores en `.env`:
+
+- `HOST=0.0.0.0` para que Nest escuche fuera de `localhost`.
+- `PORT=3000` (o el que quieras publicar).
+- `ALLOWED_ORIGINS` con los frontends que consumirán la API, separados por coma.
+
+Ejemplo:
+
+```env
+HOST=0.0.0.0
+PORT=3000
+ALLOWED_ORIGINS=http://localhost:3000,http://192.168.1.10:3000
+```
+
+### 2. Levantar base de datos local (opcional con Docker)
+
+```bash
+docker compose up -d postgres pgadmin
+```
+
+### 3. Levantar la API
+
+```bash
+npm run start:dev
+```
+
+Prueba desde otra maquina en tu misma red:
+
+```bash
+curl http://TU_IP_LOCAL:3000/api/v1/exchange-rates/current
+```
+
+### 4. Exponer a internet (desarrollo)
+
+Para compartir temporalmente tu API sin abrir puertos del router:
+
+```bash
+# opcion A: ngrok
+ngrok http 3000
+
+# opcion B: cloudflared
+cloudflared tunnel --url http://localhost:3000
+```
+
+Luego agrega el dominio publico del tunel a `ALLOWED_ORIGINS` si tu frontend web hará llamadas desde navegador.
+
+### 5. Si no responde desde fuera
+
+- Verifica firewall de macOS (permitir Node.js conexiones entrantes).
+- Confirma que el proceso escucha en `0.0.0.0:3000`.
+- Si será acceso desde internet sin túnel, configura port forwarding en tu router al equipo local.
+
 ## Compile and run the project
 
 ```bash

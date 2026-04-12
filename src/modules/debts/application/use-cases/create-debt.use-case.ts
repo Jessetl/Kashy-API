@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { UseCase } from '../../../../shared-kernel/application/use-case';
 import type { IDebtRepository } from '../../domain/interfaces/repositories/debt.repository.interface';
@@ -8,6 +8,7 @@ import { DebtPriority } from '../../domain/enums/debt-priority.enum';
 import { CreateDebtDto } from '../dtos/create-debt.dto';
 import { DebtResponseDto } from '../dtos/debt-response.dto';
 import { DebtMapper } from '../mappers/debt.mapper';
+import { ScheduleDebtNotificationUseCase } from '../../../notifications/application/use-cases/schedule-debt-notification.use-case';
 
 interface CreateDebtInput {
   userId: string;
@@ -15,10 +16,17 @@ interface CreateDebtInput {
 }
 
 @Injectable()
-export class CreateDebtUseCase implements UseCase<CreateDebtInput, DebtResponseDto> {
+export class CreateDebtUseCase implements UseCase<
+  CreateDebtInput,
+  DebtResponseDto
+> {
+  private readonly logger = new Logger(CreateDebtUseCase.name);
+
   constructor(
     @Inject(DEBT_REPOSITORY)
     private readonly debtRepository: IDebtRepository,
+    @Optional()
+    private readonly scheduleNotification?: ScheduleDebtNotificationUseCase,
   ) {}
 
   async execute(input: CreateDebtInput): Promise<DebtResponseDto> {
@@ -35,6 +43,20 @@ export class CreateDebtUseCase implements UseCase<CreateDebtInput, DebtResponseD
     );
 
     const saved = await this.debtRepository.save(debt);
+
+    if (saved.dueDate && this.scheduleNotification) {
+      try {
+        await this.scheduleNotification.execute({
+          userId: saved.userId,
+          debtId: saved.id,
+          dueDate: saved.dueDate,
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Failed to schedule notification: ${message}`);
+      }
+    }
+
     return DebtMapper.toResponse(saved);
   }
 }

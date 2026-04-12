@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { UseCase } from '../../../../shared-kernel/application/use-case';
 import type { IDebtRepository } from '../../domain/interfaces/repositories/debt.repository.interface';
 import { DEBT_REPOSITORY } from '../../domain/interfaces/repositories/debt.repository.interface';
@@ -6,6 +6,8 @@ import { UpdateDebtDto } from '../dtos/update-debt.dto';
 import { DebtResponseDto } from '../dtos/debt-response.dto';
 import { DebtMapper } from '../mappers/debt.mapper';
 import { DebtNotFoundException } from '../../domain/exceptions/debt-not-found.exception';
+import { ScheduleDebtNotificationUseCase } from '../../../notifications/application/use-cases/schedule-debt-notification.use-case';
+import { CancelDebtNotificationsUseCase } from '../../../notifications/application/use-cases/cancel-debt-notifications.use-case';
 
 interface UpdateDebtInput {
   debtId: string;
@@ -15,9 +17,15 @@ interface UpdateDebtInput {
 
 @Injectable()
 export class UpdateDebtUseCase implements UseCase<UpdateDebtInput, DebtResponseDto> {
+  private readonly logger = new Logger(UpdateDebtUseCase.name);
+
   constructor(
     @Inject(DEBT_REPOSITORY)
     private readonly debtRepository: IDebtRepository,
+    @Optional()
+    private readonly scheduleNotification?: ScheduleDebtNotificationUseCase,
+    @Optional()
+    private readonly cancelNotifications?: CancelDebtNotificationsUseCase,
   ) {}
 
   async execute(input: UpdateDebtInput): Promise<DebtResponseDto> {
@@ -49,6 +57,25 @@ export class UpdateDebtUseCase implements UseCase<UpdateDebtInput, DebtResponseD
     });
 
     const saved = await this.debtRepository.save(updated);
+
+    // Reschedule notification if due_date changed
+    if (input.dto.dueDate !== undefined) {
+      try {
+        if (saved.dueDate && this.scheduleNotification) {
+          await this.scheduleNotification.execute({
+            userId: saved.userId,
+            debtId: saved.id,
+            dueDate: saved.dueDate,
+          });
+        } else if (!saved.dueDate && this.cancelNotifications) {
+          await this.cancelNotifications.execute({ debtId: saved.id });
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Failed to update notification: ${message}`);
+      }
+    }
+
     return DebtMapper.toResponse(saved);
   }
 }

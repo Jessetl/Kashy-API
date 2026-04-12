@@ -8,6 +8,8 @@ interface UserProfileProps {
   locationLabel?: string | null;
   locationLatitude?: number | null;
   locationLongitude?: number | null;
+  notificationEnabled?: boolean;
+  fcmToken?: string | null;
 }
 
 export class User extends BaseEntity {
@@ -20,6 +22,8 @@ export class User extends BaseEntity {
   readonly locationLabel: string | null;
   readonly locationLatitude: number | null;
   readonly locationLongitude: number | null;
+  readonly notificationEnabled: boolean;
+  readonly fcmToken: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -41,6 +45,8 @@ export class User extends BaseEntity {
     this.locationLabel = profile.locationLabel ?? null;
     this.locationLatitude = profile.locationLatitude ?? null;
     this.locationLongitude = profile.locationLongitude ?? null;
+    this.notificationEnabled = profile.notificationEnabled ?? true;
+    this.fcmToken = profile.fcmToken ?? null;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }

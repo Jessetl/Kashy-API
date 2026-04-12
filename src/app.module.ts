@@ -18,6 +18,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
 import { ExchangeRatesModule } from './modules/exchange-rates/exchange-rates.module';
 import { DebtsModule } from './modules/debts/debts.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { DebtsModule } from './modules/debts/debts.module';
     ShoppingListsModule,
     ExchangeRatesModule,
     DebtsModule,
+    NotificationsModule,
 
     // Rate limiting
     ThrottlerModule.forRoot([

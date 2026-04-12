@@ -49,6 +49,16 @@ export class UserOrmEntity {
   })
   locationLongitude!: number | null;
 
+  @Column({
+    name: 'notification_enabled',
+    type: 'boolean',
+    default: true,
+  })
+  notificationEnabled!: boolean;
+
+  @Column({ name: 'fcm_token', type: 'varchar', nullable: true })
+  fcmToken!: string | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
