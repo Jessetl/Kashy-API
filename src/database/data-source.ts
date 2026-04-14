@@ -8,6 +8,10 @@ export default new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_NAME || 'valoapi',
+  ssl: (process.env.DB_HOST ?? '').includes('render.com')
+    ? { rejectUnauthorized: false }
+    : false,
   entities: ['src/**/*.orm-entity.ts'],
   migrations: ['src/database/migrations/*.ts'],
+  synchronize: false, // Recuerda mantener esto en false en producción
 });
