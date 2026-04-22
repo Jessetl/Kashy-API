@@ -59,6 +59,9 @@ export class UserOrmEntity {
   @Column({ name: 'fcm_token', type: 'varchar', nullable: true })
   fcmToken!: string | null;
 
+  @Column({ name: 'fcm_platform', type: 'varchar', nullable: true })
+  fcmPlatform!: string | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 

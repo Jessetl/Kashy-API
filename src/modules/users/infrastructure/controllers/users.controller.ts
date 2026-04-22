@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Delete,
   UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
@@ -30,6 +31,7 @@ import { SeedLoginUseCase } from '../../application/use-cases/seed-login.use-cas
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
 import { ChangePasswordUseCase } from '../../application/use-cases/change-password.use-case';
 import { GoogleAuthUseCase } from '../../application/use-cases/google-auth.use-case';
+import { UpdatePushTokenUseCase } from '../../application/use-cases/update-push-token.use-case';
 import { RegisterUserDto } from '../../application/dtos/register-user.dto';
 import { GoogleAuthDto } from '../../application/dtos/google-auth.dto';
 import { LoginUserDto } from '../../application/dtos/login-user.dto';
@@ -38,6 +40,7 @@ import { UpdateNotificationPreferencesDto } from '../../application/dtos/update-
 import { SeedLoginDto } from '../../application/dtos/seed-login.dto';
 import { UpdateProfileDto } from '../../application/dtos/update-profile.dto';
 import { ChangePasswordDto } from '../../application/dtos/change-password.dto';
+import { UpdatePushTokenDto } from '../../application/dtos/update-push-token.dto';
 import { UserResponseDto } from '../../application/dtos/user-response.dto';
 import { LoginResponseDto } from '../../application/dtos/login-response.dto';
 import { NotificationPreferencesResponseDto } from '../../application/dtos/notification-preferences-response.dto';
@@ -58,6 +61,7 @@ export class UsersController {
     private readonly updateProfile: UpdateProfileUseCase,
     private readonly changePassword: ChangePasswordUseCase,
     private readonly googleAuth: GoogleAuthUseCase,
+    private readonly updatePushToken: UpdatePushTokenUseCase,
   ) {}
 
   @Public()
@@ -252,6 +256,53 @@ export class UsersController {
     return this.updateNotificationPreferences.execute({
       userId: localUser.id,
       dto,
+    });
+  }
+
+  @Put('me/push-token')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('firebase-token')
+  @ApiOperation({ summary: 'Registrar/actualizar token FCM del dispositivo' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token FCM actualizado',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Token invalido o ausente' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  async registerPushToken(
+    @CurrentUser() user: FirebaseUser,
+    @Body() dto: UpdatePushTokenDto,
+  ) {
+    if (!user.uid) {
+      throw new ForbiddenException('Invalid token payload');
+    }
+    return this.updatePushToken.execute({
+      firebaseUid: user.uid,
+      token: dto.token,
+      platform: dto.platform,
+    });
+  }
+
+  @Delete('me/push-token')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('firebase-token')
+  @ApiOperation({ summary: 'Eliminar token FCM del dispositivo' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token FCM eliminado',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Token invalido o ausente' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  async deletePushToken(@CurrentUser() user: FirebaseUser) {
+    if (!user.uid) {
+      throw new ForbiddenException('Invalid token payload');
+    }
+    return this.updatePushToken.execute({
+      firebaseUid: user.uid,
+      token: null,
+      platform: null,
     });
   }
 

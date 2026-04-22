@@ -17,6 +17,7 @@ export class UserPersistenceMapper {
         locationLongitude: orm.locationLongitude,
         notificationEnabled: orm.notificationEnabled,
         fcmToken: orm.fcmToken,
+        fcmPlatform: orm.fcmPlatform,
       },
       orm.createdAt,
       orm.updatedAt,
@@ -37,6 +38,7 @@ export class UserPersistenceMapper {
     orm.locationLongitude = user.locationLongitude;
     orm.notificationEnabled = user.notificationEnabled;
     orm.fcmToken = user.fcmToken;
+    orm.fcmPlatform = user.fcmPlatform;
     orm.createdAt = user.createdAt;
     orm.updatedAt = user.updatedAt;
     return orm;

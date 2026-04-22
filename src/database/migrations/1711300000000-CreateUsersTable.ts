@@ -61,6 +61,21 @@ export class CreateUsersTable1711300000000 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'fcm_token',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'notification_enabled',
+            type: 'boolean',
+            default: true,
+          },
+          {
+            name: 'fcm_platform',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'created_at',
             type: 'timestamptz',
             default: 'now()',

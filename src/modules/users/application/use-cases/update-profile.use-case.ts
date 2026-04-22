@@ -52,6 +52,8 @@ export class UpdateProfileUseCase implements UseCase<Input, UserResponseDto> {
       lastName: dto.lastName,
       avatarUrl: dto.avatarUrl,
       country: dto.country,
+      notificationEnabled: dto.notificationEnabled,
+      fcmToken: dto.fcmToken,
     });
 
     const saved = await this.userRepository.save(updated);

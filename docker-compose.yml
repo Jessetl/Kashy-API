@@ -1,4 +1,37 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${API_IMAGE:-kashy-api:latest}
+    container_name: kashy-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      HOST: 0.0.0.0
+      PORT: ${PORT:-3000}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_DATABASE: ${DB_DATABASE:-db}
+      DB_SSL: false
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-}
+      FIREBASE_API_KEY: ${FIREBASE_API_KEY:-}
+      FIREBASE_AUTH_URL: ${FIREBASE_AUTH_URL:-https://identitytoolkit.googleapis.com/v1}
+      DOLAR_API_URL_VE: ${DOLAR_API_URL_VE:-https://ve.dolarapi.com/v1/dolares/oficial}
+      DOLAR_API_URL_AR: ${DOLAR_API_URL_AR:-https://dolarapi.com/v1/dolares/oficial}
+      DOLAR_API_URL_CL: ${DOLAR_API_URL_CL:-https://cl.dolarapi.com/v1/cotizaciones/usd}
+      DOLAR_API_URL_CO: ${DOLAR_API_URL_CO:-https://co.dolarapi.com/v1/cotizaciones/usd}
+    ports:
+      - '${PORT:-3000}:3000'
+    depends_on:
+      - postgres
+      - rabbitmq
+
   postgres:
     image: postgres:16-alpine
     container_name: kashy-postgres
@@ -6,7 +39,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-kashy}
+      POSTGRES_DB: ${DB_DATABASE:-db}
     ports:
       - '${DB_PORT:-5432}:5432'
     volumes:

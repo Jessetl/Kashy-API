@@ -31,6 +31,78 @@
 $ npm install
 ```
 
+## Docker: Backend + RabbitMQ + Postgres
+
+### 1. Preparar variables
+
+```bash
+cp .env.example .env
+```
+
+Verifica estos valores en `.env` para levantar todo por Docker:
+
+- `PORT=3000`
+- `DB_USERNAME=postgres`
+- `DB_PASSWORD=postgres`
+- `DB_DATABASE=db`
+- `RABBITMQ_USER=guest`
+- `RABBITMQ_PASSWORD=guest`
+- Credenciales Firebase (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`) para envío real por FCM.
+
+### 2. Construir y levantar servicios
+
+```bash
+docker compose up -d --build api postgres rabbitmq
+```
+
+Servicios disponibles:
+
+- API: `http://localhost:3000`
+- Swagger: `http://localhost:3000/docs`
+- RabbitMQ Management: `http://localhost:15672` (user/pass del `.env`)
+
+### 3. Ejecutar migraciones y seeds (si no existen tablas)
+
+```bash
+docker compose exec api npm run migration:run
+docker compose exec api npm run seed
+```
+
+### 4. Verificar conexión a RabbitMQ
+
+```bash
+docker compose logs -f api
+```
+
+Debes ver logs similares a:
+
+- `Connected to RabbitMQ`
+- `RabbitMQ consumer started`
+
+### 5. Subir imagen a Docker Hub
+
+```bash
+docker login
+docker tag kashy-api:latest TU_USUARIO_DOCKERHUB/kashy-api:latest
+docker push TU_USUARIO_DOCKERHUB/kashy-api:latest
+```
+
+Si quieres que `docker compose` use tu imagen publicada en vez de build local, exporta:
+
+```bash
+export API_IMAGE=TU_USUARIO_DOCKERHUB/kashy-api:latest
+docker compose up -d api postgres rabbitmq
+```
+
+### 6. Probar envío de notificaciones (flujo completo)
+
+1. Inicia sesión con un usuario autenticado.
+2. Asegúrate de tener `pushEnabled=true` y `debtReminders=true` en `PUT /users/me/notification-preferences`.
+3. Crea una deuda con `dueDate` para mañana en `POST /debts`.
+4. Espera el ciclo del cron (cada minuto) o revisa logs en `api`.
+5. Confirma en RabbitMQ Management que el mensaje pasa por `notifications_queue`.
+6. Verifica en el móvil que llega el push FCM.
+
 ## Levantar en local y permitir conexiones externas
 
 ### 1. Variables de entorno

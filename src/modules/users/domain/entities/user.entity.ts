@@ -10,6 +10,7 @@ interface UserProfileProps {
   locationLongitude?: number | null;
   notificationEnabled?: boolean;
   fcmToken?: string | null;
+  fcmPlatform?: string | null;
 }
 
 export class User extends BaseEntity {
@@ -24,6 +25,7 @@ export class User extends BaseEntity {
   readonly locationLongitude: number | null;
   readonly notificationEnabled: boolean;
   readonly fcmToken: string | null;
+  readonly fcmPlatform: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -47,6 +49,7 @@ export class User extends BaseEntity {
     this.locationLongitude = profile.locationLongitude ?? null;
     this.notificationEnabled = profile.notificationEnabled ?? true;
     this.fcmToken = profile.fcmToken ?? null;
+    this.fcmPlatform = profile.fcmPlatform ?? null;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -66,6 +69,9 @@ export class User extends BaseEntity {
     lastName?: string | null;
     avatarUrl?: string | null;
     country?: string;
+    notificationEnabled?: boolean;
+    fcmToken?: string | null;
+    fcmPlatform?: string | null;
   }): User {
     return new User(
       this.id,
@@ -79,8 +85,11 @@ export class User extends BaseEntity {
         locationLabel: this.locationLabel,
         locationLatitude: this.locationLatitude,
         locationLongitude: this.locationLongitude,
-        notificationEnabled: this.notificationEnabled,
-        fcmToken: this.fcmToken,
+        notificationEnabled:
+          changes.notificationEnabled ?? this.notificationEnabled,
+        fcmToken: 'fcmToken' in changes ? changes.fcmToken : this.fcmToken,
+        fcmPlatform:
+          'fcmPlatform' in changes ? changes.fcmPlatform : this.fcmPlatform,
       },
       this.createdAt,
       new Date(),
