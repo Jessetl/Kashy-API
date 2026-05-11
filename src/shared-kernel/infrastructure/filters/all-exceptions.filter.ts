@@ -16,7 +16,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     const message =
-      exception instanceof Error ? exception.message : 'Internal server error';
+      exception instanceof Error ? exception.message : 'Error interno del servidor';
 
     this.logger.error(
       message,
@@ -28,7 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       error: {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         code: 'InternalServerError',
-        message: 'Internal server error',
+        message: 'Error interno del servidor',
       },
       timestamp: new Date().toISOString(),
     });

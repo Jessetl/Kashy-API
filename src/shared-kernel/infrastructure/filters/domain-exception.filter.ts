@@ -11,27 +11,18 @@ import { NotFoundException } from '../../domain/exceptions/not-found.exception';
 import { ConflictException } from '../../domain/exceptions/conflict.exception';
 import { ValidationException } from '../../domain/exceptions/validation.exception';
 import { UnauthorizedException } from '../../domain/exceptions/unauthorized.exception';
+import { ForbiddenException } from '../../domain/exceptions/forbidden.exception';
 import { ExternalServiceException } from '../../domain/exceptions/external-service.exception';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger('DomainException');
 
-  private readonly statusMap = new Map<string, number>([
-    [NotFoundException.name, HttpStatus.NOT_FOUND],
-    [ConflictException.name, HttpStatus.CONFLICT],
-    [ValidationException.name, HttpStatus.BAD_REQUEST],
-    [UnauthorizedException.name, HttpStatus.UNAUTHORIZED],
-    [ExternalServiceException.name, HttpStatus.SERVICE_UNAVAILABLE],
-  ]);
-
   catch(exception: DomainException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const status =
-      this.statusMap.get(exception.constructor.name) ||
-      HttpStatus.INTERNAL_SERVER_ERROR;
+    const status = this.resolveStatus(exception);
 
     this.logger.warn(`${exception.constructor.name}: ${exception.message}`);
 
@@ -44,5 +35,21 @@ export class DomainExceptionFilter implements ExceptionFilter {
       },
       timestamp: new Date().toISOString(),
     });
+  }
+
+  private resolveStatus(exception: DomainException): number {
+    if (exception instanceof NotFoundException) return HttpStatus.NOT_FOUND;
+    if (exception instanceof ConflictException) return HttpStatus.CONFLICT;
+    if (exception instanceof ValidationException) {
+      return HttpStatus.BAD_REQUEST;
+    }
+    if (exception instanceof UnauthorizedException) {
+      return HttpStatus.UNAUTHORIZED;
+    }
+    if (exception instanceof ForbiddenException) return HttpStatus.FORBIDDEN;
+    if (exception instanceof ExternalServiceException) {
+      return HttpStatus.SERVICE_UNAVAILABLE;
+    }
+    return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 }

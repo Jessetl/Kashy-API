@@ -21,7 +21,7 @@ import {
 import { CurrentUser } from '../../../../shared-kernel/infrastructure/decorators/current-user.decorator';
 import { ParseUUIDPipe } from '../../../../shared-kernel/infrastructure/pipes/parse-uuid.pipe';
 import type { FirebaseUser } from '../../../../shared-kernel/infrastructure/guards/firebase-auth.guard';
-import { SyncFirebaseUserUseCase } from '../../../users/application/use-cases/sync-firebase-user.use-case';
+import { SyncFirebaseUserUseCase } from '../../../auth/application/use-cases/sync-firebase-user.use-case';
 import { CreateDebtUseCase } from '../../application/use-cases/create-debt.use-case';
 import { GetDebtsUseCase } from '../../application/use-cases/get-debts.use-case';
 import { GetDebtByIdUseCase } from '../../application/use-cases/get-debt-by-id.use-case';

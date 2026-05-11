@@ -14,7 +14,7 @@ import { DomainExceptionFilter } from './shared-kernel/infrastructure/filters/do
 import { LoggingInterceptor } from './shared-kernel/infrastructure/interceptors/logging.interceptor';
 import { ResponseTransformInterceptor } from './shared-kernel/infrastructure/interceptors/response-transform.interceptor';
 import { getDatabaseConfig } from './shared-kernel/infrastructure/config/database.config';
-import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ShoppingListsModule } from './modules/shopping-lists/shopping-lists.module';
 import { ExchangeRatesModule } from './modules/exchange-rates/exchange-rates.module';
 import { DebtsModule } from './modules/debts/debts.module';
@@ -37,7 +37,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     FirebaseAdminModule,
 
     // Modulos de dominio
-    UsersModule,
+    AuthModule,
     ShoppingListsModule,
     ExchangeRatesModule,
     DebtsModule,

@@ -53,7 +53,7 @@ export class FirebaseAuthGuard implements CanActivate {
 
     if (!token) {
       throw new UnauthorizedException(
-        'Missing or invalid authorization header',
+        'Falta o es invalido el encabezado de autorizacion',
       );
     }
 
@@ -68,7 +68,7 @@ export class FirebaseAuthGuard implements CanActivate {
 
       return true;
     } catch {
-      throw new UnauthorizedException('Invalid or expired Firebase token');
+      throw new UnauthorizedException('Token de Firebase invalido o expirado');
     }
   }
 
