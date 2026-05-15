@@ -9,27 +9,24 @@ const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 
-function getKey(): Buffer {
+const getKey = (): Buffer => {
   const raw = process.env.APP_ENCRYPTION_KEY;
   if (!raw) {
     throw new Error('APP_ENCRYPTION_KEY env var is not configured');
   }
   return createHash('sha256').update(raw, 'utf8').digest();
-}
+};
 
-export function encryptString(plaintext: string): string {
+export const encryptString = (plaintext: string): string => {
   const key = getKey();
   const iv = randomBytes(IV_LENGTH);
   const cipher = createCipheriv(ALGORITHM, key, iv);
-  const enc = Buffer.concat([
-    cipher.update(plaintext, 'utf8'),
-    cipher.final(),
-  ]);
+  const enc = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
   return Buffer.concat([iv, tag, enc]).toString('base64');
-}
+};
 
-export function decryptString(payload: string): string {
+export const decryptString = (payload: string): string => {
   const key = getKey();
   const buffer = Buffer.from(payload, 'base64');
   const iv = buffer.subarray(0, IV_LENGTH);
@@ -39,4 +36,4 @@ export function decryptString(payload: string): string {
   decipher.setAuthTag(tag);
   const dec = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
   return dec.toString('utf8');
-}
+};

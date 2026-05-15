@@ -2,46 +2,46 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ApiErrorDetail {
   @ApiProperty({ example: 404 })
-  statusCode: number;
+  statusCode!: number;
 
   @ApiProperty({ example: 'NotFoundException' })
-  code: string;
+  code!: string;
 
   @ApiProperty({ example: 'User with id "abc" not found' })
-  message: string;
+  message!: string;
 }
 
 export class ApiSuccessResponse<T> {
   @ApiProperty({ example: true })
-  success: true;
+  success!: true;
 
   @ApiProperty()
-  data: T;
+  data!: T;
 
   @ApiProperty({ example: '2026-03-24T12:00:00.000Z' })
-  timestamp: string;
+  timestamp!: string;
 }
 
 export class ApiErrorResponse {
   @ApiProperty({ example: false })
-  success: false;
+  success!: false;
 
   @ApiProperty({ type: ApiErrorDetail })
-  error: ApiErrorDetail;
+  error!: ApiErrorDetail;
 
   @ApiProperty({ example: '2026-03-24T12:00:00.000Z' })
-  timestamp: string;
+  timestamp!: string;
 }
 
 export class ApiPaginatedResponse<T> {
   @ApiProperty({ example: true })
-  success: true;
+  success!: true;
 
   @ApiProperty()
-  data: T[];
+  data!: T[];
 
   @ApiPropertyOptional()
-  meta: {
+  meta!: {
     total: number;
     page: number;
     limit: number;
@@ -49,5 +49,5 @@ export class ApiPaginatedResponse<T> {
   };
 
   @ApiProperty({ example: '2026-03-24T12:00:00.000Z' })
-  timestamp: string;
+  timestamp!: string;
 }

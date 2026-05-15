@@ -22,18 +22,16 @@ export class RegisterUserDto {
   password!: string;
 
   @ApiPropertyOptional({ example: 'Jane' })
-  @IsOptional()
   @IsString()
   @MaxLength(80)
   @Expose({ name: 'first_name' })
-  first_name?: string;
+  first_name!: string;
 
   @ApiPropertyOptional({ example: 'Doe' })
-  @IsOptional()
   @IsString()
   @MaxLength(80)
   @Expose({ name: 'last_name' })
-  last_name?: string;
+  last_name!: string;
 
   @ApiProperty({ example: 'VE', description: 'Codigo ISO 3166-1 alpha-2' })
   @IsString()

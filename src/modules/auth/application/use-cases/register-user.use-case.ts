@@ -54,12 +54,13 @@ export class RegisterUserUseCase implements UseCase<
         firebaseResult.firebaseUid,
         dto.email,
         dto.country_code,
-        dto.first_name ?? null,
-        dto.last_name ?? null,
+        dto.first_name,
+        dto.last_name,
         null,
         dto.latitude ?? null,
         dto.longitude ?? null,
       );
+
       const savedUser = await this.userRepository.save(user);
 
       const prefs = NotificationPreferences.createDefault(

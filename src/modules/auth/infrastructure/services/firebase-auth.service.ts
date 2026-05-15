@@ -9,6 +9,7 @@ import {
 import * as admin from 'firebase-admin';
 import {
   FirebaseAuthResult,
+  FirebaseGoogleSignInResult,
   FirebaseRefreshResult,
   FirebaseSignInInput,
   FirebaseSignUpInput,
@@ -33,6 +34,20 @@ interface SecureTokenResponse {
   refresh_token: string;
   expires_in: string;
   user_id: string;
+}
+
+interface SignInWithIdpResponse {
+  idToken: string;
+  refreshToken: string;
+  expiresIn: string;
+  localId: string;
+  email: string;
+  emailVerified?: boolean;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  displayName?: string;
+  photoUrl?: string;
 }
 
 interface FirebaseErrorResponse {
@@ -135,6 +150,107 @@ export class FirebaseAuthService implements IFirebaseAuthService {
     await this.firebaseAdmin.auth().deleteUser(firebaseUid);
   }
 
+  async updatePassword(
+    firebaseUid: string,
+    newPassword: string,
+  ): Promise<void> {
+    try {
+      await this.firebaseAdmin
+        .auth()
+        .updateUser(firebaseUid, { password: newPassword });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Firebase updatePassword failed: ${message}`);
+      throw this.mapFirebaseError(message);
+    }
+  }
+
+  async revokeRefreshTokens(firebaseUid: string): Promise<void> {
+    await this.firebaseAdmin.auth().revokeRefreshTokens(firebaseUid);
+  }
+
+  async signInWithGoogle(
+    googleIdToken: string,
+  ): Promise<FirebaseGoogleSignInResult> {
+    const apiKey = this.getApiKey();
+    const url = `${IDENTITY_TOOLKIT_BASE}:signInWithIdp?key=${apiKey}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        postBody: `id_token=${googleIdToken}&providerId=google.com`,
+        requestUri: 'http://localhost',
+        returnSecureToken: true,
+        returnIdpCredential: true,
+      }),
+    });
+
+    const payload = (await response.json()) as
+      | SignInWithIdpResponse
+      | FirebaseErrorResponse;
+
+    if (!response.ok) {
+      const errorPayload = payload as FirebaseErrorResponse;
+      const code = errorPayload.error?.message ?? 'UNKNOWN_ERROR';
+      this.logger.warn(`Firebase signInWithIdp failed: ${code}`);
+      throw this.mapFirebaseError(code);
+    }
+
+    const success = payload as SignInWithIdpResponse;
+    const { firstName, lastName } = this.splitDisplayName(
+      success.firstName,
+      success.lastName,
+      success.fullName ?? success.displayName,
+    );
+
+    return {
+      firebaseUid: success.localId,
+      idToken: success.idToken,
+      refreshToken: success.refreshToken,
+      expiresIn: Number(success.expiresIn),
+      email: success.email,
+      emailVerified: success.emailVerified ?? true,
+      firstName,
+      lastName,
+      avatarUrl: success.photoUrl ?? null,
+    };
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<void> {
+    const apiKey = this.getApiKey();
+    const url = `${IDENTITY_TOOLKIT_BASE}:sendOobCode?key=${apiKey}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        requestType: 'PASSWORD_RESET',
+        email,
+      }),
+    });
+
+    if (response.ok) {
+      return;
+    }
+
+    const payload = (await response.json()) as FirebaseErrorResponse;
+    const code = payload.error?.message ?? 'UNKNOWN_ERROR';
+
+    if (
+      code.startsWith('EMAIL_NOT_FOUND') ||
+      code.startsWith('USER_NOT_FOUND')
+    ) {
+      this.logger.warn(
+        `Password reset requested for unknown email, returning success to avoid enumeration`,
+      );
+      return;
+    }
+
+    this.logger.warn(`Firebase sendOobCode PASSWORD_RESET failed: ${code}`);
+    throw this.mapFirebaseError(code);
+  }
+
   private async callIdentityToolkit(
     endpoint: 'signUp' | 'signInWithPassword',
     body: Record<string, unknown>,
@@ -191,6 +307,33 @@ export class FirebaseAuthService implements IFirebaseAuthService {
       );
     }
     return apiKey;
+  }
+
+  private splitDisplayName(
+    firstName?: string,
+    lastName?: string,
+    fullName?: string,
+  ): { firstName: string | null; lastName: string | null } {
+    if (firstName || lastName) {
+      return {
+        firstName: firstName?.trim() || null,
+        lastName: lastName?.trim() || null,
+      };
+    }
+
+    const cleaned = fullName?.trim();
+    if (!cleaned) {
+      return { firstName: null, lastName: null };
+    }
+
+    const parts = cleaned.split(/\s+/);
+    if (parts.length === 1) {
+      return { firstName: parts[0], lastName: null };
+    }
+    return {
+      firstName: parts[0],
+      lastName: parts.slice(1).join(' '),
+    };
   }
 
   private mapFirebaseError(code: string): Error {

@@ -13,6 +13,7 @@ import { ValidationException } from '../../domain/exceptions/validation.exceptio
 import { UnauthorizedException } from '../../domain/exceptions/unauthorized.exception';
 import { ForbiddenException } from '../../domain/exceptions/forbidden.exception';
 import { ExternalServiceException } from '../../domain/exceptions/external-service.exception';
+import { buildErrorResponse } from './error-response';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
@@ -26,27 +27,30 @@ export class DomainExceptionFilter implements ExceptionFilter {
 
     this.logger.warn(`${exception.constructor.name}: ${exception.message}`);
 
-    response.status(status).json({
-      success: false,
-      error: {
-        statusCode: status,
-        code: exception.constructor.name,
-        message: exception.message,
-      },
-      timestamp: new Date().toISOString(),
-    });
+    const fields =
+      exception instanceof ValidationException ? exception.fields : undefined;
+
+    response
+      .status(status)
+      .json(buildErrorResponse(status, exception.message, fields));
   }
 
   private resolveStatus(exception: DomainException): number {
-    if (exception instanceof NotFoundException) return HttpStatus.NOT_FOUND;
-    if (exception instanceof ConflictException) return HttpStatus.CONFLICT;
+    if (exception instanceof NotFoundException) {
+      return HttpStatus.NOT_FOUND;
+    }
+    if (exception instanceof ConflictException) {
+      return HttpStatus.CONFLICT;
+    }
     if (exception instanceof ValidationException) {
-      return HttpStatus.BAD_REQUEST;
+      return HttpStatus.UNPROCESSABLE_ENTITY;
     }
     if (exception instanceof UnauthorizedException) {
       return HttpStatus.UNAUTHORIZED;
     }
-    if (exception instanceof ForbiddenException) return HttpStatus.FORBIDDEN;
+    if (exception instanceof ForbiddenException) {
+      return HttpStatus.FORBIDDEN;
+    }
     if (exception instanceof ExternalServiceException) {
       return HttpStatus.SERVICE_UNAVAILABLE;
     }

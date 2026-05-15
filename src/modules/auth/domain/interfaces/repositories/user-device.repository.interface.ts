@@ -10,4 +10,8 @@ export interface IUserDeviceRepository {
   ): Promise<UserDevice | null>;
   save(device: UserDevice): Promise<UserDevice>;
   delete(id: string): Promise<void>;
+  deleteByUserIdExceptDevice(
+    userId: string,
+    keepDeviceId: string,
+  ): Promise<void>;
 }

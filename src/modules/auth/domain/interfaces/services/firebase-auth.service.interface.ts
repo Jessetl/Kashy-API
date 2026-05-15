@@ -26,6 +26,13 @@ export interface FirebaseRefreshResult {
   firebaseUid: string;
 }
 
+export interface FirebaseGoogleSignInResult extends FirebaseAuthResult {
+  firstName: string | null;
+  lastName: string | null;
+  avatarUrl: string | null;
+  emailVerified: boolean;
+}
+
 export interface IFirebaseAuthService {
   signUp(input: FirebaseSignUpInput): Promise<FirebaseAuthResult>;
   signIn(input: FirebaseSignInInput): Promise<FirebaseAuthResult>;
@@ -33,4 +40,8 @@ export interface IFirebaseAuthService {
   sendEmailVerification(idToken: string): Promise<void>;
   isEmailVerified(firebaseUid: string): Promise<boolean>;
   deleteUser(firebaseUid: string): Promise<void>;
+  updatePassword(firebaseUid: string, newPassword: string): Promise<void>;
+  revokeRefreshTokens(firebaseUid: string): Promise<void>;
+  sendPasswordResetEmail(email: string): Promise<void>;
+  signInWithGoogle(googleIdToken: string): Promise<FirebaseGoogleSignInResult>;
 }

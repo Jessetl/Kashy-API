@@ -26,14 +26,18 @@ export class TypeOrmUserRepository implements IUserRepository {
 
   async findByFirebaseUid(firebaseUid: string): Promise<User | null> {
     const orm = await this.ormRepository.findOne({ where: { firebaseUid } });
-    if (!orm) return null;
+    if (!orm) {
+      return null;
+    }
     const fcmToken = await this.getLatestFcmToken(orm.id);
     return UserPersistenceMapper.toDomain(orm, fcmToken);
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const orm = await this.ormRepository.findOne({ where: { email } });
-    if (!orm) return null;
+    if (!orm) {
+      return null;
+    }
     const fcmToken = await this.getLatestFcmToken(orm.id);
     return UserPersistenceMapper.toDomain(orm, fcmToken);
   }
@@ -49,7 +53,7 @@ export class TypeOrmUserRepository implements IUserRepository {
   }
 
   private async getLatestFcmToken(userId: string): Promise<string | null> {
-    const rows = (await this.ormRepository.manager.query(
+    const rows = await this.ormRepository.manager.query<DeviceTokenRow[]>(
       `
         SELECT firebase_fcm_token AS fcm_token
         FROM user_devices
@@ -58,7 +62,7 @@ export class TypeOrmUserRepository implements IUserRepository {
         LIMIT 1
       `,
       [userId],
-    )) as DeviceTokenRow[];
+    );
 
     return rows.length > 0 ? rows[0].fcm_token : null;
   }

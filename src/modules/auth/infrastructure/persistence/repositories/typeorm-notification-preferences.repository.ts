@@ -7,9 +7,7 @@ import { NotificationPreferencesOrmEntity } from '../orm-entities/notification-p
 import { NotificationPreferencesPersistenceMapper } from '../mappers/notification-preferences-persistence.mapper';
 
 @Injectable()
-export class TypeOrmNotificationPreferencesRepository
-  implements INotificationPreferencesRepository
-{
+export class TypeOrmNotificationPreferencesRepository implements INotificationPreferencesRepository {
   constructor(
     @InjectRepository(NotificationPreferencesOrmEntity)
     private readonly ormRepository: Repository<NotificationPreferencesOrmEntity>,
@@ -20,9 +18,7 @@ export class TypeOrmNotificationPreferencesRepository
     return orm ? NotificationPreferencesPersistenceMapper.toDomain(orm) : null;
   }
 
-  async save(
-    prefs: NotificationPreferences,
-  ): Promise<NotificationPreferences> {
+  async save(prefs: NotificationPreferences): Promise<NotificationPreferences> {
     const orm = NotificationPreferencesPersistenceMapper.toOrm(prefs);
     const saved = await this.ormRepository.save(orm);
     return NotificationPreferencesPersistenceMapper.toDomain(saved);

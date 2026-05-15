@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import type { IUserDeviceRepository } from '../../../domain/interfaces/repositories/user-device.repository.interface';
 import { UserDevice } from '../../../domain/entities/user-device.entity';
 import { UserDeviceOrmEntity } from '../orm-entities/user-device.orm-entity';
@@ -36,5 +36,15 @@ export class TypeOrmUserDeviceRepository implements IUserDeviceRepository {
 
   async delete(id: string): Promise<void> {
     await this.ormRepository.delete(id);
+  }
+
+  async deleteByUserIdExceptDevice(
+    userId: string,
+    keepDeviceId: string,
+  ): Promise<void> {
+    await this.ormRepository.delete({
+      userId,
+      deviceId: Not(keepDeviceId),
+    });
   }
 }

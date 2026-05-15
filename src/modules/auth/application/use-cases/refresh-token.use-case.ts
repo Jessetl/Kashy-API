@@ -38,9 +38,7 @@ export class RefreshTokenUseCase implements UseCase<
   async execute(input: RefreshTokenInput): Promise<RefreshResponseDto> {
     const device = await this.deviceRepository.findByDeviceId(input.deviceId);
     if (!device) {
-      throw new UnauthorizedException(
-        'Sesion de dispositivo no encontrada',
-      );
+      throw new UnauthorizedException('Sesion de dispositivo no encontrada');
     }
 
     let firebaseRefreshToken: string;

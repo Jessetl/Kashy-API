@@ -10,24 +10,24 @@ import type { IUserDeviceRepository } from '../../domain/interfaces/repositories
 import { USER_DEVICE_REPOSITORY } from '../../domain/interfaces/repositories/user-device.repository.interface';
 import type { IFirebaseAuthService } from '../../domain/interfaces/services/firebase-auth.service.interface';
 import { FIREBASE_AUTH_SERVICE } from '../../domain/interfaces/services/firebase-auth.service.interface';
+import type { FirebaseGoogleSignInResult } from '../../domain/interfaces/services/firebase-auth.service.interface';
 import { User } from '../../domain/entities/user.entity';
 import { NotificationPreferences } from '../../domain/entities/notification-preferences.entity';
 import { UserDevice } from '../../domain/entities/user-device.entity';
-import { EmailNotVerifiedException } from '../../domain/exceptions/email-not-verified.exception';
-import { LoginUserDto } from '../dtos/login-user.dto';
+import { LoginGoogleDto } from '../dtos/login-google.dto';
 import { AuthResponseDto } from '../dtos/auth-response.dto';
 import { UserMapper } from '../mappers/user.mapper';
 import { JwtTokenService } from '../services/jwt-token.service';
 import { DeviceInfo } from '../../infrastructure/decorators/device-info.decorator';
 
-interface LoginUserInput {
-  dto: LoginUserDto;
+interface LoginWithGoogleInput {
+  dto: LoginGoogleDto;
   device: DeviceInfo;
 }
 
 @Injectable()
-export class LoginUserUseCase implements UseCase<
-  LoginUserInput,
+export class LoginWithGoogleUseCase implements UseCase<
+  LoginWithGoogleInput,
   AuthResponseDto
 > {
   constructor(
@@ -42,25 +42,14 @@ export class LoginUserUseCase implements UseCase<
     private readonly jwtTokenService: JwtTokenService,
   ) {}
 
-  async execute(input: LoginUserInput): Promise<AuthResponseDto> {
+  async execute(input: LoginWithGoogleInput): Promise<AuthResponseDto> {
     const { dto, device } = input;
 
-    const firebaseResult = await this.firebaseAuth.signIn({
-      email: dto.email,
-      password: dto.password,
-    });
-
-    const emailVerified = await this.firebaseAuth.isEmailVerified(
-      firebaseResult.firebaseUid,
+    const firebaseResult = await this.firebaseAuth.signInWithGoogle(
+      dto.google_id_token,
     );
-    if (!emailVerified) {
-      throw new EmailNotVerifiedException();
-    }
 
-    const user = await this.findOrCreateUser(
-      firebaseResult.firebaseUid,
-      firebaseResult.email,
-    );
+    const user = await this.findOrCreateUser(firebaseResult);
 
     await this.upsertDevice(user.id, device, firebaseResult.refreshToken);
 
@@ -74,13 +63,22 @@ export class LoginUserUseCase implements UseCase<
   }
 
   private async findOrCreateUser(
-    firebaseUid: string,
-    email: string,
+    fb: FirebaseGoogleSignInResult,
   ): Promise<User> {
-    const existing = await this.userRepository.findByFirebaseUid(firebaseUid);
+    const existing = await this.userRepository.findByFirebaseUid(
+      fb.firebaseUid,
+    );
     if (existing) return existing;
 
-    const user = User.create(randomUUID(), firebaseUid, email, 'VE');
+    const user = User.create(
+      randomUUID(),
+      fb.firebaseUid,
+      fb.email,
+      'VE',
+      fb.firstName,
+      fb.lastName,
+      fb.avatarUrl,
+    );
     const saved = await this.userRepository.save(user);
 
     const prefs = NotificationPreferences.createDefault(randomUUID(), saved.id);

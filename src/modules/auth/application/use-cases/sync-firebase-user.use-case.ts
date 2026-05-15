@@ -48,10 +48,7 @@ export class SyncFirebaseUserUseCase
 
     const saved = await this.userRepository.save(user);
 
-    const prefs = NotificationPreferences.createDefault(
-      randomUUID(),
-      saved.id,
-    );
+    const prefs = NotificationPreferences.createDefault(randomUUID(), saved.id);
     await this.prefsRepository.save(prefs);
 
     return { id: saved.id };

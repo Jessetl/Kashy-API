@@ -15,10 +15,16 @@ import { FIREBASE_AUTH_SERVICE } from './domain/interfaces/services/firebase-aut
 import { FIREBASE_USER_SYNC_PORT } from '../../shared-kernel/domain/interfaces/firebase-user-sync.port';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
+import { LoginWithGoogleUseCase } from './application/use-cases/login-with-google.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.use-case';
+import { RecoverPasswordUseCase } from './application/use-cases/recover-password.use-case';
 import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id.use-case';
+import { UpdateProfileUseCase } from './application/use-cases/update-profile.use-case';
+import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { SyncFirebaseUserUseCase } from './application/use-cases/sync-firebase-user.use-case';
 import { JwtTokenService } from './application/services/jwt-token.service';
+import { UserIdentityResolver } from '../../shared-kernel/infrastructure/services/user-identity-resolver.service';
 import { AuthController } from './infrastructure/controllers/auth.controller';
 
 @Module({
@@ -53,13 +59,19 @@ import { AuthController } from './infrastructure/controllers/auth.controller';
     JwtTokenService,
     RegisterUserUseCase,
     LoginUserUseCase,
+    LoginWithGoogleUseCase,
     RefreshTokenUseCase,
+    ChangePasswordUseCase,
+    RecoverPasswordUseCase,
     GetUserByIdUseCase,
+    UpdateProfileUseCase,
+    LogoutUseCase,
     SyncFirebaseUserUseCase,
     {
       provide: FIREBASE_USER_SYNC_PORT,
       useExisting: SyncFirebaseUserUseCase,
     },
+    UserIdentityResolver,
   ],
   exports: [
     USER_REPOSITORY,
@@ -68,6 +80,7 @@ import { AuthController } from './infrastructure/controllers/auth.controller';
     FIREBASE_USER_SYNC_PORT,
     SyncFirebaseUserUseCase,
     JwtTokenService,
+    UserIdentityResolver,
   ],
 })
 export class AuthModule {}

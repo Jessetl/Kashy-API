@@ -7,7 +7,6 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { FirebaseAdminModule } from './shared-kernel/infrastructure/firebase/firebase-admin.module';
 import { FirebaseAuthGuard } from './shared-kernel/infrastructure/guards/firebase-auth.guard';
-import { RolesGuard } from './shared-kernel/infrastructure/guards/roles.guard';
 import { AllExceptionsFilter } from './shared-kernel/infrastructure/filters/all-exceptions.filter';
 import { HttpExceptionFilter } from './shared-kernel/infrastructure/filters/http-exception.filter';
 import { DomainExceptionFilter } from './shared-kernel/infrastructure/filters/domain-exception.filter';
@@ -75,11 +74,6 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     {
       provide: APP_GUARD,
       useClass: FirebaseAuthGuard,
-    },
-    // Guard global: verifica roles (custom claims)
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
     },
     // Guard global: rate limiting
     {
