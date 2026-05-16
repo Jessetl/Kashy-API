@@ -4,6 +4,7 @@ import type { INotificationPreferencesRepository } from '../../domain/interfaces
 import type { IFirebaseAuthService } from '../../domain/interfaces/services/firebase-auth.service.interface';
 import { User } from '../../domain/entities/user.entity';
 import { UserAlreadyExistsException } from '../../domain/exceptions/user-already-exists.exception';
+import { RegisterUserDto } from '../dtos/register-user.dto';
 import { RegisterUserUseCase } from './register-user.use-case';
 
 describe('RegisterUserUseCase', () => {
@@ -12,13 +13,13 @@ describe('RegisterUserUseCase', () => {
   let firebaseAuth: jest.Mocked<IFirebaseAuthService>;
   let useCase: RegisterUserUseCase;
 
-  const dto = {
+  const dto: RegisterUserDto = {
     email: 'jane@kashy.app',
     password: 'StrongPass123',
     first_name: 'Jane',
     last_name: 'Doe',
     country_code: 'VE',
-  } as never;
+  };
 
   beforeEach(() => {
     userRepository = {
