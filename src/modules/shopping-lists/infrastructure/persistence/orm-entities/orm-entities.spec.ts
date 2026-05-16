@@ -27,7 +27,7 @@ describe('Shopping list ORM entities', () => {
     item.totalLocal = 100;
     item.unitPriceUsd = 2.5;
     item.totalUsd = 5;
-    item.isPurchased = false;
+    item.isChecked = false;
     item.createdAt = new Date('2026-04-01T00:00:00.000Z');
     item.shoppingList = list;
 

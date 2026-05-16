@@ -10,13 +10,15 @@ export class ShoppingListMapper {
     dto.userId = list.userId;
     dto.name = list.name;
     dto.storeName = list.storeName;
-    dto.status = list.status;
-    dto.ivaEnabled = list.ivaEnabled;
-    dto.totalLocal = list.totalLocal;
-    dto.totalUsd = list.totalUsd;
+    dto.listType = list.listType;
+    dto.countryCode = list.countryCode;
+    dto.currencyCode = list.currencyCode;
     dto.exchangeRateSnapshot = list.exchangeRateSnapshot;
-    dto.createdAt = list.createdAt;
-    dto.completedAt = list.completedAt;
+    dto.ivaEnabled = list.ivaEnabled;
+    dto.scheduledDate = list.scheduledDate;
+    dto.latitude = list.latitude;
+    dto.longitude = list.longitude;
+    dto.isActive = list.isActive;
     dto.items = list.items.map((item) => this.toItemResponse(item));
     return dto;
   }
@@ -32,7 +34,7 @@ export class ShoppingListMapper {
     dto.totalLocal = item.totalLocal;
     dto.unitPriceUsd = item.unitPriceUsd;
     dto.totalUsd = item.totalUsd;
-    dto.isPurchased = item.isPurchased;
+    dto.isChecked = item.isChecked;
     dto.createdAt = item.createdAt;
     return dto;
   }

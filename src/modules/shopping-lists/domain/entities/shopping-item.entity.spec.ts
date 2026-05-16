@@ -18,7 +18,7 @@ describe('ShoppingItem', () => {
     expect(item.totalLocal).toBe(80);
     expect(item.unitPriceUsd).toBe(2);
     expect(item.totalUsd).toBe(4);
-    expect(item.isPurchased).toBe(false);
+    expect(item.isChecked).toBe(false);
   });
 
   it('create mantiene unitPriceUsd nulo si no hay tasa valida', () => {
@@ -69,7 +69,7 @@ describe('ShoppingItem', () => {
 
     const toggled = original.togglePurchased();
 
-    expect(toggled.isPurchased).toBe(true);
+    expect(toggled.isChecked).toBe(true);
     expect(toggled.id).toBe(original.id);
     expect(toggled.productName).toBe(original.productName);
   });
@@ -101,7 +101,7 @@ describe('ShoppingItem', () => {
     expect(updated.productName).toBe('Pasta Integral');
     expect(updated.unitPriceUsd).toBe(2);
     expect(updated.totalUsd).toBe(4);
-    expect(updated.isPurchased).toBe(true);
+    expect(updated.isChecked).toBe(true);
   });
 
   it('reconstitute conserva props sin recalculo', () => {
@@ -115,12 +115,12 @@ describe('ShoppingItem', () => {
       totalLocal: 999,
       unitPriceUsd: null,
       totalUsd: null,
-      isPurchased: true,
+      isChecked: true,
       createdAt,
     });
 
     expect(item.totalLocal).toBe(999);
     expect(item.createdAt).toBe(createdAt);
-    expect(item.isPurchased).toBe(true);
+    expect(item.isChecked).toBe(true);
   });
 });

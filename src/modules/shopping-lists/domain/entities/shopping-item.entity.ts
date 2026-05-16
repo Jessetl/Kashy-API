@@ -9,7 +9,7 @@ interface ShoppingItemProps {
   totalLocal: number;
   unitPriceUsd: number | null;
   totalUsd: number | null;
-  isPurchased: boolean;
+  isChecked: boolean;
   createdAt: Date;
 }
 
@@ -22,7 +22,7 @@ export class ShoppingItem extends BaseEntity {
   readonly totalLocal: number;
   readonly unitPriceUsd: number | null;
   readonly totalUsd: number | null;
-  readonly isPurchased: boolean;
+  readonly isChecked: boolean;
   readonly createdAt: Date;
 
   private constructor(id: string, props: ShoppingItemProps) {
@@ -35,14 +35,14 @@ export class ShoppingItem extends BaseEntity {
     this.totalLocal = props.totalLocal;
     this.unitPriceUsd = props.unitPriceUsd;
     this.totalUsd = props.totalUsd;
-    this.isPurchased = props.isPurchased;
+    this.isChecked = props.isChecked;
     this.createdAt = props.createdAt;
   }
 
   /**
    * @param unitPriceUsd Si es null y rateLocalPerUsd esta disponible, se calcula automaticamente.
    * @param rateLocalPerUsd Tasa local/USD vigente para conversion automatica.
-   * @param isPurchased Estado de compra (default false para items nuevos).
+   * @param isChecked Estado de compra (default false para items nuevos).
    */
   static create(
     id: string,
@@ -53,7 +53,7 @@ export class ShoppingItem extends BaseEntity {
     quantity: number,
     unitPriceUsd: number | null = null,
     rateLocalPerUsd: number | null = null,
-    isPurchased: boolean = false,
+    isChecked: boolean = false,
   ): ShoppingItem {
     const totalLocal = unitPriceLocal * quantity;
 
@@ -79,7 +79,7 @@ export class ShoppingItem extends BaseEntity {
       totalLocal,
       unitPriceUsd: resolvedUnitPriceUsd,
       totalUsd,
-      isPurchased,
+      isChecked,
       createdAt: new Date(),
     });
   }
@@ -94,7 +94,7 @@ export class ShoppingItem extends BaseEntity {
       totalLocal: this.totalLocal,
       unitPriceUsd: this.unitPriceUsd,
       totalUsd: this.totalUsd,
-      isPurchased: !this.isPurchased,
+      isChecked: !this.isChecked,
       createdAt: this.createdAt,
     });
   }
@@ -106,7 +106,7 @@ export class ShoppingItem extends BaseEntity {
     quantity: number,
     unitPriceUsd: number | null,
     rateLocalPerUsd: number | null,
-    isPurchased: boolean,
+    isChecked: boolean,
   ): ShoppingItem {
     return ShoppingItem.create(
       this.id,
@@ -117,7 +117,7 @@ export class ShoppingItem extends BaseEntity {
       quantity,
       unitPriceUsd,
       rateLocalPerUsd,
-      isPurchased,
+      isChecked,
     );
   }
 

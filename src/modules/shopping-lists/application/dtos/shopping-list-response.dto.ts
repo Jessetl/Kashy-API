@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ShoppingListType } from '../../domain/enums/shopping-list-type.enum';
 import { ShoppingItemResponseDto } from './shopping-item-response.dto';
 
 export class ShoppingListResponseDto {
@@ -14,26 +15,35 @@ export class ShoppingListResponseDto {
   @ApiPropertyOptional({ example: 'Supermercado Central', nullable: true })
   storeName!: string | null;
 
-  @ApiProperty({ example: 'ACTIVE', enum: ['ACTIVE', 'COMPLETED'] })
-  status!: string;
+  @ApiProperty({ enum: ShoppingListType, example: ShoppingListType.TEMPLATE })
+  listType!: ShoppingListType;
+
+  @ApiProperty({ example: 'VE' })
+  countryCode!: string;
+
+  @ApiProperty({ example: 'VES' })
+  currencyCode!: string;
+
+  @ApiProperty({ example: 36.5 })
+  exchangeRateSnapshot!: number;
 
   @ApiProperty({ example: false })
   ivaEnabled!: boolean;
 
-  @ApiProperty({ example: 150.75 })
-  totalLocal!: number;
+  @ApiPropertyOptional({
+    example: '2026-04-15T18:00:00.000Z',
+    nullable: true,
+  })
+  scheduledDate!: Date | null;
 
-  @ApiProperty({ example: 4.12 })
-  totalUsd!: number;
+  @ApiPropertyOptional({ example: 10.4806, nullable: true })
+  latitude!: number | null;
 
-  @ApiPropertyOptional({ example: 36.5, nullable: true })
-  exchangeRateSnapshot!: number | null;
+  @ApiPropertyOptional({ example: -66.9036, nullable: true })
+  longitude!: number | null;
 
-  @ApiProperty({ example: '2026-03-27T12:00:00.000Z' })
-  createdAt!: Date;
-
-  @ApiPropertyOptional({ example: '2026-03-27T18:00:00.000Z', nullable: true })
-  completedAt!: Date | null;
+  @ApiProperty({ example: true })
+  isActive!: boolean;
 
   @ApiProperty({ type: [ShoppingItemResponseDto] })
   items!: ShoppingItemResponseDto[];

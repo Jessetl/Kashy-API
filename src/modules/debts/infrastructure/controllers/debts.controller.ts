@@ -32,7 +32,7 @@ import { DebtResponseDto } from '../../application/dtos/debt-response.dto';
 import { DeleteDebtResponseDto } from '../../application/dtos/delete-debt-response.dto';
 
 @ApiTags('Debts')
-@ApiBearerAuth('firebase-token')
+@ApiBearerAuth('jwt')
 @Controller('debts')
 export class DebtsController {
   constructor(

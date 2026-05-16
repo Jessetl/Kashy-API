@@ -69,7 +69,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'firebase-token',
+      'jwt',
     )
     .addTag(
       'Auth',

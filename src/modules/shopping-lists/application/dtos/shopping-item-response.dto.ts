@@ -29,7 +29,7 @@ export class ShoppingItemResponseDto {
   totalUsd!: number | null;
 
   @ApiProperty({ example: false })
-  isPurchased!: boolean;
+  isChecked!: boolean;
 
   @ApiProperty({ example: '2026-03-27T12:00:00.000Z' })
   createdAt!: Date;
